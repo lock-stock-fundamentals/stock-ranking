@@ -8,12 +8,9 @@ shed = BlockingScheduler(timezone="Europe/Moscow")
 
 def job_function_1():
     scf().spreadsheet_forming()
-    
-def job_function_2():
-    scf_2().PerformAll()
-
-    
-shed.add_job(job_function_1, 'cron', day_of_week='sun', hour=17, minute=25)  # sun (Sunday night : 2 ; 5)
-shed.add_job(job_function_2, 'cron', day_of_week='sun', hour=10, minute=5)  # sun (Sunday morning (say, 10 AM)
+    scf_2().PerformAll() # perform the 2-nd part right after the first one
+      
+shed.add_job(job_function_1, 'cron', day_of_week='sun', hour=4, minute=5)  # sun (Sunday night : 4 ; 5)
+# shed.add_job(job_function_2, 'cron', day_of_week='sun', hour=10, minute=5)  # sun (Sunday morning (say, 10 AM)
 # shed.add_job(job_function_3, 'cron', day_of_week='mon', hour=16, minute=37)  # sun (Monday morning)
 shed.start()
