@@ -258,6 +258,9 @@ class RankingClass():
                     print(f'Exception at yf getting data, might be TypeError etc.')
                     pass
 
+        self.backup_to_retro()        
+
+    def backup_to_retro(self):
         # Backup for Retro sheet
 
         # reading the ranking page to clear it up
@@ -277,6 +280,3 @@ class RankingClass():
         serv_e_2.spreadsheets().values().append(spreadsheetId=self.ranking_page, range=range, body=new_resource, valueInputOption="USER_ENTERED").execute()
         # serv_e_2.spreadsheets().values().append(spreadsheetId=ranking_page, range=range, body=new_resource, valueInputOption="USER_ENTERED").execute()
         print(f'Done at all!')
-
-if __name__ == '__main__':
-    RankingClass().spreadsheet_forming()
