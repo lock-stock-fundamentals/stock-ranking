@@ -10,7 +10,7 @@ def job_function_1():
     scf().spreadsheet_forming()
     scf_2().PerformAll() # perform the 2-nd part right after the first one
       
-shed.add_job(job_function_1, 'cron', day_of_week='sat', hour=4, minute=5)  # sun (Sunday night : 4 ; 5)
+shed.add_job(job_function_1, 'cron', day_of_week='sat', hour=4, minute=5)  # sun (Sunday night : 4 ; 5), make sure especially to avoid simultaneous start with tickers getter!
 # shed.add_job(job_function_2, 'cron', day_of_week='sun', hour=10, minute=5)  # sun (Sunday morning (say, 10 AM)
 # shed.add_job(job_function_3, 'cron', day_of_week='mon', hour=16, minute=37)  # sun (Monday morning)
 shed.start()
