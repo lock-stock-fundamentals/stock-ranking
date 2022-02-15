@@ -45,53 +45,58 @@ class RankingClass():
 
     def yfinance_data(self, comp):
 
-        yf.pdr_override()
-        data = pdr.get_data_yahoo(comp, self.start, self.end, threads=False)
-        # data = pdr.get_data_yahoo(comp, start, end, threads=False)
-        data['PriceDiff'] = data['Close'].shift(-1) - data['Close']
-        data['Return'] = data['PriceDiff'] / data['Close']
-
-        # Create a new column direction.
-        # The list cmprehension means: if the price difference is larger than 0, donate as 1, otherwise, doate 0
-        data['Direction'] = [1 if data['PriceDiff'].loc[ei] > 0 else 0 for ei in data.index]
-
-        # making mean average for 10 and 50 days
-        data['ma50'] = data['Close'].rolling(50).mean()
-        data['ma10'] = data['Close'].rolling(10).mean()
-        data['ma5'] = data['Close'].rolling(5).mean()
-
-        data['Shares'] = [1 if data.loc[ei, 'ma10'] > data.loc[ei, 'ma5'] else 0 for ei in data.index]
-        data['Close1'] = data['Close'].shift(-1)
-        data['Profit'] = [data.loc[ei, 'Close1'] - data.loc[ei, 'Close'] if data.loc[ei, 'Shares'] == 1 else 0 for ei in data.index]
-        data['wealth'] = data['Profit'].cumsum()
-        verdict_whole_period = round(data['wealth'][-2], 2)   # todo: make sure this is to a unified value
-
-        data['LogReturn'] = np.log(data['Close']).shift(-1) - np.log(data['Close'])
-        mu = data['LogReturn'].mean()  # approximate mean
-        sigma = data['LogReturn'].std(ddof=1)  # variance of the log daily return
-
-        # what is the chance of losing over _n_% in a day?
-        mu220 = 220 * mu
-        sigma220 = 220 ** 0.5 * sigma
-        prob_to_drop_over_40 = norm.cdf(-0.4, mu220, sigma220)
-        buy_now_10_50__decision = round(data['ma10'][-2] - data['ma50'][-2], 2)  # 'Buy' if ...
-        buy_now_5_10__decision = round(data['ma5'][-2] - data['ma10'][-2], 2)  # 'Buy' if ...
-
-        listed_values = data.values.tolist()
-        latest_close_price = round(listed_values[-1][4], 2)
-        latest_ma5 = round(listed_values[-1][-6], 2)
-        latest_ma10 = round(listed_values[-1][-7], 2)
-        latest_ma50 = round(listed_values[-1][-8], 2)
-        stock_list_data = [verdict_whole_period, round(prob_to_drop_over_40 * 100, 2), round(buy_now_10_50__decision, 2), round(buy_now_5_10__decision, 2), latest_ma50, latest_ma10, latest_ma5, latest_close_price]
-        checked_stock_list_data = []
-        check_list = [None, 'N/A', 'Nan']
-        for i in stock_list_data:
-            if i in check_list:
-                i = 0
-                checked_stock_list_data.append(i)
-            else: checked_stock_list_data.append(i)
-
-        return checked_stock_list_data
+        try:
+            yf.pdr_override()
+            data = pdr.get_data_yahoo(comp, self.start, self.end, threads=False)
+            # data = pdr.get_data_yahoo(comp, start, end, threads=False)
+            data['PriceDiff'] = data['Close'].shift(-1) - data['Close']
+            data['Return'] = data['PriceDiff'] / data['Close']
+    
+            # Create a new column direction.
+            # The list cmprehension means: if the price difference is larger than 0, donate as 1, otherwise, doate 0
+            data['Direction'] = [1 if data['PriceDiff'].loc[ei] > 0 else 0 for ei in data.index]
+    
+            # making mean average for 10 and 50 days
+            data['ma50'] = data['Close'].rolling(50).mean()
+            data['ma10'] = data['Close'].rolling(10).mean()
+            data['ma5'] = data['Close'].rolling(5).mean()
+    
+            data['Shares'] = [1 if data.loc[ei, 'ma10'] > data.loc[ei, 'ma5'] else 0 for ei in data.index]
+            data['Close1'] = data['Close'].shift(-1)
+            data['Profit'] = [data.loc[ei, 'Close1'] - data.loc[ei, 'Close'] if data.loc[ei, 'Shares'] == 1 else 0 for ei in data.index]
+            data['wealth'] = data['Profit'].cumsum()
+            verdict_whole_period = round(data['wealth'][-2], 2)   # todo: make sure this is to a unified value
+    
+            data['LogReturn'] = np.log(data['Close']).shift(-1) - np.log(data['Close'])
+            mu = data['LogReturn'].mean()  # approximate mean
+            sigma = data['LogReturn'].std(ddof=1)  # variance of the log daily return
+    
+            # what is the chance of losing over _n_% in a day?
+            mu220 = 220 * mu
+            sigma220 = 220 ** 0.5 * sigma
+            prob_to_drop_over_40 = norm.cdf(-0.4, mu220, sigma220)
+            buy_now_10_50__decision = round(data['ma10'][-2] - data['ma50'][-2], 2)  # 'Buy' if ...
+            buy_now_5_10__decision = round(data['ma5'][-2] - data['ma10'][-2], 2)  # 'Buy' if ...
+    
+            listed_values = data.values.tolist()
+            latest_close_price = round(listed_values[-1][4], 2)
+            latest_ma5 = round(listed_values[-1][-6], 2)
+            latest_ma10 = round(listed_values[-1][-7], 2)
+            latest_ma50 = round(listed_values[-1][-8], 2)
+            stock_list_data = [verdict_whole_period, round(prob_to_drop_over_40 * 100, 2), round(buy_now_10_50__decision, 2), round(buy_now_5_10__decision, 2), latest_ma50, latest_ma10, latest_ma5, latest_close_price]
+            checked_stock_list_data = []
+            check_list = [None, 'N/A', 'Nan']
+            for i in stock_list_data:
+                if i in check_list:
+                    i = 0
+                    checked_stock_list_data.append(i)
+                else: checked_stock_list_data.append(i)
+    
+            return checked_stock_list_data
+        
+        except:
+            checked_stock_list_data = None
+            return checked_stock_list_data
 
     # stock_market fundamental data from yfinance
     def spreadsheet_forming(self):
@@ -258,9 +263,6 @@ class RankingClass():
                     print(f'Exception at yf getting data, might be TypeError etc.')
                     pass
 
-        self.backup_to_retro()        
-
-    def backup_to_retro(self):
         # Backup for Retro sheet
 
         # reading the ranking page to clear it up
