@@ -6,7 +6,7 @@ from ranking_part_to_G_2 import RankingClass as scf_2
 # from parse_insiders_1 import InsidersDeals
 
 def job_function_1():
-    # scf().spreadsheet_forming()
+    scf().spreadsheet_forming()
     time.sleep(10)
     scf_double_check().spreadsheet_forming_after_check()
     time.sleep(10)
